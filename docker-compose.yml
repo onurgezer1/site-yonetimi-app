@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+    # Application
+    app:
+        build: .
+        container_name: smartyonetim-app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        networks:
+            - smartyonetim
+        depends_on:
+            - database
+            - redis
+
+    # Nginx Service
+    webserver:
+        image: nginx:alpine
+        container_name: smartyonetim-webserver
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - smartyonetim
+
+    # PostgreSQL Database
+    database:
+        image: postgres:16-alpine
+        container_name: smartyonetim-database
+        restart: unless-stopped
+        ports:
+            - "5433:5432"
+        environment:
+            POSTGRES_DB: smartyonetim
+            POSTGRES_USER: laravel
+            POSTGRES_PASSWORD: password
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        networks:
+            - smartyonetim
+
+    # Redis
+    redis:
+        image: redis:7-alpine
+        container_name: smartyonetim-redis
+        restart: unless-stopped
+        ports:
+            - "6380:6379"
+        volumes:
+            - redisdata:/data
+        networks:
+            - smartyonetim
+
+    # Node.js for asset building
+    node:
+        image: node:20-alpine
+        container_name: smartyonetim-node
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        command: ["npm", "run", "dev"]
+        networks:
+            - smartyonetim
+
+# Docker Networks
+networks:
+    smartyonetim:
+        driver: bridge
+
+# Volumes
+volumes:
+    pgdata:
+        driver: local
+    redisdata:
+        driver: local
