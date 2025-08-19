@@ -187,20 +187,57 @@ GET /api/aidats/statistics
 
 ## 🚀 Deployment
 
-### Laravel Forge ile
-1. GitHub repository'yi bağlayın
-2. Environment variables'ı ayarlayın
-3. Deployment script'i çalıştırın
+### 1. PHP Sunucu Deployment (Önerilen)
 
-### Manuel Deployment
+SmartYonetim'i çeşitli PHP hosting ortamlarına kurabilirsiniz:
+
+#### Otomatik Kurulum
 ```bash
-# Production için optimize edin
+# Otomatik kurulum scripti ile
+./deploy.sh
+```
+
+#### Desteklenen Hosting Tipleri
+- **Shared Hosting (cPanel)** - Detaylar: [CPANEL-KURULUM.md](CPANEL-KURULUM.md)
+- **VPS/Dedicated Server** - Detaylar: [PHP-SUNUCU-KURULUM.md](PHP-SUNUCU-KURULUM.md)
+- **Laravel Forge**
+- **DigitalOcean Droplet**
+- **AWS EC2**
+
+#### Manuel Kurulum
+```bash
+# PHP bağımlılıklarını yükleyin
 composer install --optimize-autoloader --no-dev
-npm run build
+
+# Environment dosyasını ayarlayın
+cp .env.production .env
+php artisan key:generate
+
+# Veritabanını ayarlayın
+php artisan migrate --force
+
+# Production için optimize edin
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+
+# Assets'leri build edin
+npm run build
 ```
+
+### 2. Docker Deployment
+```bash
+# Docker ile development
+docker-compose up -d
+
+# Production docker setup
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### 3. Laravel Forge
+1. GitHub repository'yi bağlayın
+2. Environment variables'ı ayarlayın
+3. Deployment script'i çalıştırın
 
 ## 🔒 Güvenlik
 
