@@ -1,5 +1,10 @@
 import './bootstrap';
 import { createApp } from 'vue';
+import Alpine from 'alpinejs';
+
+// Initialize Alpine.js
+window.Alpine = Alpine;
+Alpine.start();
 
 const app = createApp({});
 
